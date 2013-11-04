@@ -1,2 +1,5 @@
 [run]
 source = djfaker
+omit =
+	djfaker/models.py
+
