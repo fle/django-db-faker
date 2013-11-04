@@ -11,6 +11,7 @@ class FakerBaseTest(TestCase):
         self.old_installed_apps = settings.INSTALLED_APPS
         settings.INSTALLED_APPS = list(settings.INSTALLED_APPS)
         settings.INSTALLED_APPS.append('djfaker.tests.testapp')
+        settings.INSTALLED_APPS.append('djfaker.tests.testapp2')
         loading.cache.loaded = False
         call_command('syncdb', verbosity=0)
         super(FakerBaseTest, self)._pre_setup()
