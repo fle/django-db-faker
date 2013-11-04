@@ -33,6 +33,10 @@ class DummyFakerWithoutUpdateQS(ModelFaker):
     """ A dummy faker to test behavior when QS_FOR_DELETION is not provided """
     FAKER_FOR = models.FakerTestA
 
+class DummyFakerWithoutReplacers(ModelFaker):
+    """ A dummy faker to test behavior when no replacer is not provided """
+    FAKER_FOR = models.FakerTestA
+
 class DummyInvalidFaker1(ModelFaker):
     """ A dummy invalid faker because it does not provide FAKER_FOR """
     pass

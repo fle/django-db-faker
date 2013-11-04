@@ -5,7 +5,8 @@ from .helpers import FakerBaseTest
 from .testapp.models import FakerTestA, FakerTestB
 from .testapp.fakers import (FakerTestAFaker, FakerTestBFaker,
 DummyInvalidFaker1, DummyInvalidFaker2, DummyInvalidFaker3,
-DummyFakerWithoutDeletionQS, DummyFakerWithoutUpdateQS)
+DummyFakerWithoutDeletionQS, DummyFakerWithoutUpdateQS,
+DummyFakerWithoutReplacers)
 
 
 class ModelFakerTest(FakerBaseTest):
@@ -81,6 +82,8 @@ class ModelFakerTest(FakerBaseTest):
         self.assertEqual('dummyA', inst1.prop_w)
         self.assertEqual('Jack', inst1.prop_x)
         self.assertEqual('Hello Jack', inst1.prop_y)
+        # Check with no replacer provided : should do nothing
+        DummyFakerWithoutReplacers()._run_update() # How to test it ?
 
     def test__run(self):
         """ Test all the whole process ! """
@@ -97,9 +100,6 @@ class ModelFakerTest(FakerBaseTest):
         # RUN !
         mf = FakerTestAFaker()
         mf._run()
-        # Ensure fakers have been ran
-        self.assertTrue(FakerTestBFaker._ran)
-        self.assertTrue(FakerTestAFaker._ran)
         # Check instances states
         qs = FakerTestA.objects.values_list('id', flat=True)
         self.assertEqual(set([instA1.pk, instA2.pk]), set(qs))
@@ -109,6 +109,11 @@ class ModelFakerTest(FakerBaseTest):
         self.assertEqual('fixed', instA2.prop_w)
         instB1 = FakerTestB.objects.get(pk=instB1.pk)
         self.assertEqual('dummyB', instB1.prop_z)
+        # Ensure fakers have been marked as `ran`
+        self.assertTrue(FakerTestBFaker._ran)
+        self.assertTrue(FakerTestAFaker._ran)
+        # Try to re-run a faker should do nothing
+        FakerTestAFaker()._run() # How to test it ?
 
     def test__run__no_deps(self):
         """ Test _run method with `no_deps` arg True """
