@@ -8,7 +8,7 @@ class FakerTestAFaker(ModelFaker):
     FAKER_FOR = models.FakerTestA
     QS_FOR_DELETION = lambda x: models.FakerTestA.objects.filter(old=True)
     QS_FOR_UPDATE = lambda x: models.FakerTestA.objects.filter(prop_w='foo')
-    DEPENDS_ON = ('djfaker.tests.fakers.FakerTestBFaker', )
+    DEPENDS_ON = ('djfaker.tests.testapp.fakers.FakerTestBFaker', )
 
     # Faked by replacing by a constant builtin value (a.k.a "native replacer")
     prop_w = 'dummyA'

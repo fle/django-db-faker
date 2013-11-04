@@ -2,8 +2,8 @@ from django.core.exceptions import ImproperlyConfigured, ValidationError
 from djfaker import replacers
 from djfaker.exceptions import FakerUnicityError
 from .helpers import FakerBaseTest
-from .models import FakerTestA, FakerTestB
-from .fakers import (FakerTestAFaker, FakerTestBFaker,
+from .testapp.models import FakerTestA, FakerTestB
+from .testapp.fakers import (FakerTestAFaker, FakerTestBFaker,
 DummyInvalidFaker1, DummyInvalidFaker2, DummyInvalidFaker3,
 DummyFakerWithoutDeletionQS, DummyFakerWithoutUpdateQS)
 
