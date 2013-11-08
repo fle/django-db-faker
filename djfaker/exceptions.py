@@ -1,6 +1,6 @@
 """ Custom exceptions """
 from django.utils.translation import ugettext as ug
-from django.db import IntegrityError
+
 
 class FakerUnicityError(Exception):
     """ Exception raised if faker could not satisfy unicity contraints """

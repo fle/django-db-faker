@@ -8,6 +8,7 @@ from .helpers import FakerBaseTest
 from .testapp.fakers import FakerTestAFaker, FakerTestBFaker
 from .testapp2.fakers import DummyEmptyFaker
 
+
 class DJFakerFakeDBTest(FakerBaseTest):
     """ Test djfaker_fake_db command """
 
@@ -33,10 +34,13 @@ class DJFakerFakeDBTest(FakerBaseTest):
         self.assertNotIn(DummyEmptyFaker, models)
 
         # Invalid call
-        self.assertRaises(ImproperlyConfigured, autodiscover_models, None, 'FakerTestAFaker')
+        self.assertRaises(ImproperlyConfigured,
+                          autodiscover_models, None, 'FakerTestAFaker')
 
     def test_command(self):
         """ Test a real command call """
-        call_command('djfaker_fake_db', app='djfaker.tests.testapp', model='FakerTestAFaker')
+        call_command('djfaker_fake_db',
+                     app='djfaker.tests.testapp',
+                     model='FakerTestAFaker')
         self.assertTrue(FakerTestAFaker._ran)
         self.assertTrue(FakerTestBFaker._ran)

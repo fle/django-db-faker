@@ -15,7 +15,7 @@ from djfaker import ModelFaker
 
 def autodiscover_models(given_app=None, given_model=None):
     """ Autodiscover `fakers` modules and `ModelFaker` subclasses
-        `given_app` can be given to restrict autodiscovering to the given django app
+        `given_app` can be given to restrict autodiscovering
         `given_model` can be given to fake only one model
     """
 
@@ -33,7 +33,8 @@ def autodiscover_models(given_app=None, given_model=None):
     models = ModelFaker.__subclasses__()
     if given_app:
         module_fakers = getattr(sys.modules.get(given_app), 'fakers')
-        models = [m for m in models if m.__module__.startswith(module_fakers.__name__)]
+        models = [m for m in models
+                  if m.__module__.startswith(module_fakers.__name__)]
         if given_model:
             models = [getattr(module_fakers, given_model)]
 
@@ -44,18 +45,21 @@ class Command(BaseCommand):
     """ Django command """
     help = 'Anonymze database for dev or demo instances'
     option_list = BaseCommand.option_list + (
-        make_option('--no-deps', action='store_true', dest='no_deps', default=False,
+        make_option(
+            '--no-deps', action='store_true', dest='no_deps', default=False,
             help='Do not run dependencies'),
-        make_option('--no-dels', action='store_true', dest='no_dels', default=False,
+        make_option(
+            '--no-dels', action='store_true', dest='no_dels', default=False,
             help='Do not run deletions'),
     )
-    def handle(self, app=None, model=None, no_deps=False, no_dels=False, *args, **options):
+
+    def handle(self, app=None, model=None, no_deps=False, no_dels=False,
+               *args, **options):
         """ Django command handle function ... """
 
         activate(settings.LANGUAGE_CODE)
 
         faked_models = autodiscover_models(app, model)
-        print faked_models
         pre_fake_all.send(None, faked_models=faked_models)
 
         for model_faker in faked_models:

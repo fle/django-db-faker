@@ -29,25 +29,29 @@ class DummyFakerWithoutDeletionQS(ModelFaker):
     """ A dummy faker to test behavior when QS_FOR_DELETION is not provided """
     FAKER_FOR = models.FakerTestA
 
+
 class DummyFakerWithoutUpdateQS(ModelFaker):
     """ A dummy faker to test behavior when QS_FOR_DELETION is not provided """
     FAKER_FOR = models.FakerTestA
+
 
 class DummyFakerWithoutReplacers(ModelFaker):
     """ A dummy faker to test behavior when no replacer is not provided """
     FAKER_FOR = models.FakerTestA
 
+
 class DummyInvalidFaker1(ModelFaker):
     """ A dummy invalid faker because it does not provide FAKER_FOR """
     pass
+
 
 class DummyInvalidFaker2(ModelFaker):
     """ A dummy invalid faker because QS_FOR_DELETION is not a callable """
     FAKER_FOR = models.FakerTestA
     QS_FOR_DELETION = 'foo'
 
+
 class DummyInvalidFaker3(ModelFaker):
     """ A dummy invalid faker because QS_FOR_UPDATE is not a callable """
     FAKER_FOR = models.FakerTestA
     QS_FOR_UPDATE = 'foo'
-

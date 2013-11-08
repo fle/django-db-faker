@@ -1,12 +1,13 @@
 from django.core.exceptions import ImproperlyConfigured, ValidationError
-from djfaker import replacers
+from djfaker.replacers import SimpleReplacer, LazyReplacer
 from djfaker.exceptions import FakerUnicityError
 from .helpers import FakerBaseTest
 from .testapp.models import FakerTestA, FakerTestB
-from .testapp.fakers import (FakerTestAFaker, FakerTestBFaker,
-DummyInvalidFaker1, DummyInvalidFaker2, DummyInvalidFaker3,
-DummyFakerWithoutDeletionQS, DummyFakerWithoutUpdateQS,
-DummyFakerWithoutReplacers)
+from .testapp.fakers import (
+    FakerTestAFaker, FakerTestBFaker,
+    DummyInvalidFaker1, DummyInvalidFaker2, DummyInvalidFaker3,
+    DummyFakerWithoutDeletionQS, DummyFakerWithoutUpdateQS,
+    DummyFakerWithoutReplacers)
 
 
 class ModelFakerTest(FakerBaseTest):
@@ -16,8 +17,8 @@ class ModelFakerTest(FakerBaseTest):
         """ Test _get_replacers method """
         mf = FakerTestAFaker()
         self.assertEqual(['prop_w'], mf._get_replacers())
-        self.assertEqual(['prop_x'], mf._get_replacers(replacers.SimpleReplacer))
-        self.assertEqual(['prop_y'], mf._get_replacers(replacers.LazyReplacer))
+        self.assertEqual(['prop_x'], mf._get_replacers(SimpleReplacer))
+        self.assertEqual(['prop_y'], mf._get_replacers(LazyReplacer))
 
     def test__validate(self):
         """ Test _validate method """
@@ -83,19 +84,19 @@ class ModelFakerTest(FakerBaseTest):
         self.assertEqual('Jack', inst1.prop_x)
         self.assertEqual('Hello Jack', inst1.prop_y)
         # Check with no replacer provided : should do nothing
-        DummyFakerWithoutReplacers()._run_update() # How to test it ?
+        DummyFakerWithoutReplacers()._run_update()  # How to test it ?
 
     def test__run(self):
         """ Test all the whole process ! """
         # Data set
-        instA1 = FakerTestA(prop_w='foo')   # Should be faked
+        instA1 = FakerTestA(prop_w='foo')    # Should be faked
         instA1.save()
-        instA2 = FakerTestA(prop_w='fixed') # Should not be faked
+        instA2 = FakerTestA(prop_w='fixed')  # Should not be faked
         instA2.save()
-        instA3 = FakerTestA(old=True)       # Should be deleted
+        instA3 = FakerTestA(old=True)        # Should be deleted
         instA3.save()
         #---
-        instB1 = FakerTestB()               # Should be faked by dependency
+        instB1 = FakerTestB()                # Should be faked by dependency
         instB1.save()
         # RUN !
         mf = FakerTestAFaker()
@@ -113,7 +114,7 @@ class ModelFakerTest(FakerBaseTest):
         self.assertTrue(FakerTestBFaker._ran)
         self.assertTrue(FakerTestAFaker._ran)
         # Try to re-run a faker should do nothing
-        FakerTestAFaker()._run() # How to test it ?
+        FakerTestAFaker()._run()  # How to test it ?
 
     def test__run__no_deps(self):
         """ Test _run method with `no_deps` arg True """
@@ -139,4 +140,3 @@ class ModelFakerTest(FakerBaseTest):
         inst.save()
         mf = FakerTestAFaker()
         self.assertRaises(FakerUnicityError, mf._run_update)
-

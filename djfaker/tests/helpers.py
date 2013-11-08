@@ -5,6 +5,7 @@ from django.db.models import loading
 from django.test import TestCase
 from .testapp.fakers import FakerTestAFaker, FakerTestBFaker
 
+
 class FakerBaseTest(TestCase):
 
     def _pre_setup(self):

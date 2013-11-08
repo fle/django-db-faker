@@ -2,6 +2,7 @@
 from djfaker.exceptions import FakerUnicityError
 from .helpers import FakerBaseTest
 
+
 class FakerUnicityErrorTest(FakerBaseTest):
     """ Test FakerUnicityError class """
 

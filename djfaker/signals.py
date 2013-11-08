@@ -1,8 +1,5 @@
-"""
-Faker-specific signals
-"""
+""" Faker-specific signals """
 from django.dispatch import Signal
-from django.conf import settings
 
 
 # Sent before faking of a model

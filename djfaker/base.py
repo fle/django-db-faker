@@ -1,8 +1,5 @@
-import sys
-
 from django.utils.importlib import import_module
 from django.core.exceptions import ValidationError, ImproperlyConfigured
-from django.db import transaction
 
 from .exceptions import FakerUnicityError
 from .replacers import BaseReplacer, SimpleReplacer, LazyReplacer
@@ -10,7 +7,8 @@ from .signals import pre_fake_model, post_fake_model
 from .settings import FAKER_MAX_TRIES
 
 # Special declarations
-FAKER_DECLARATIONS = ['FAKER_FOR', 'QS_FOR_DELETION', 'QS_FOR_UPDATE', 'DEPENDS_ON']
+FAKER_DECLARATIONS = [
+    'FAKER_FOR', 'QS_FOR_DELETION', 'QS_FOR_UPDATE', 'DEPENDS_ON']
 
 
 class ModelFaker(object):
@@ -28,10 +26,8 @@ class ModelFaker(object):
     # Which fakers (ModelFaker subclasses) should be run before this one
     DEPENDS_ON = []
 
-
     # Internal utility : set to True when this faker is ran
     _ran = False
-
 
     def _get_replacers(self, replacerClass=None):
         """ Returns declared replacers that will be applied on instances.
@@ -40,18 +36,17 @@ class ModelFaker(object):
         """
         attrs = []
         for attr_name in dir(self):
-            attr_type = getattr(self, attr_name)
+            attr = getattr(self, attr_name)
             if attr_name in FAKER_DECLARATIONS or attr_name.startswith('_'):
-                # Skip special declaration attributes and native python attributes
+                # Skip special declarations and native python attributes
                 continue
-            if not replacerClass and not issubclass(type(attr_type), BaseReplacer):
+            if not replacerClass and not issubclass(type(attr), BaseReplacer):
                 # Not a *Replacer class, just a builtin value (int, bool, ...)
                 attrs.append(attr_name)
-            elif replacerClass and issubclass(type(attr_type), replacerClass):
+            elif replacerClass and issubclass(type(attr), replacerClass):
                 # faker.replacer.*Replacer attribute
                 attrs.append(attr_name)
         return attrs
-
 
     @classmethod
     def _validate(cls):
@@ -63,23 +58,20 @@ class ModelFaker(object):
         if cls.QS_FOR_UPDATE and not hasattr(cls.QS_FOR_UPDATE, '__call__'):
             raise ImproperlyConfigured()
 
-
     @classmethod
     def _run_dependencies(cls):
         """ Runs dependencies declared in cls.DEPENDS_ON """
         for dependency in cls.DEPENDS_ON:
             app, module, klass = dependency.rsplit('.', 2)
-            mod = import_module(app)
+            import_module(app)
             fakers = import_module('%s.fakers' % app)
             #print cls, " need dependency ", klass
             getattr(fakers, klass)()._run()
-
 
     def _run_deletion(self):
         """ Deletes instances selected by cls.QS_FOR_DELETION """
         if self.QS_FOR_DELETION:
             self.QS_FOR_DELETION().delete()
-
 
     def _get_update_qs(self):
         """ Returns queryset that selects instances to be faked (updated) """
@@ -88,7 +80,6 @@ class ModelFaker(object):
         else:
             qs = self.FAKER_FOR.objects.all()
         return qs
-
 
     def _run_update(self):
         """ Fakes instances by applying declared replacers """
@@ -109,14 +100,14 @@ class ModelFaker(object):
         for instance in qs:
 
             """
-            Dumb validation/saving methods : Faking data can generate unicity error
+            Dumb validation methods : Faking data can generate unicity error
             Algorithm is :
             - Apply replacers on an instance
             - Run validate_unique()
                 - If OK : save instance and go forward
                 - If ValidationError is raised : retry !
-            FAKER_MAX_TRIES limits number of tries and raises a FakerUnicityError
-            if it is reached
+            FAKER_MAX_TRIES limits number of tries and raises a
+            FakerUnicityError if it is reached
             """
             tries = 0
             while tries <= FAKER_MAX_TRIES:
@@ -142,7 +133,6 @@ class ModelFaker(object):
                 else:
                     instance.save()
                     break
-
 
     def _run(self, no_deps=False, no_dels=False):
         """ Main method which orchestrates faking of a model instances """
