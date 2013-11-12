@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError, ImproperlyConfigured
 from .exceptions import FakerUnicityError
 from .replacers import BaseReplacer, SimpleReplacer, LazyReplacer
 from .signals import pre_fake_model, post_fake_model
-from .settings import FAKER_MAX_TRIES
+from .settings import DJFAKER_MAX_TRIES
 
 # Special declarations
 FAKER_DECLARATIONS = [
@@ -106,11 +106,11 @@ class ModelFaker(object):
             - Run validate_unique()
                 - If OK : save instance and go forward
                 - If ValidationError is raised : retry !
-            FAKER_MAX_TRIES limits number of tries and raises a
+            DJFAKER_MAX_TRIES limits number of tries and raises a
             FakerUnicityError if it is reached
             """
             tries = 0
-            while tries <= FAKER_MAX_TRIES:
+            while tries <= DJFAKER_MAX_TRIES:
 
                 for attr in native_attrs:
                     replacer = getattr(cls, attr)
@@ -128,7 +128,7 @@ class ModelFaker(object):
                     instance.validate_unique()
                 except ValidationError, e:
                     tries += 1
-                    if FAKER_MAX_TRIES == tries:
+                    if DJFAKER_MAX_TRIES == tries:
                         raise FakerUnicityError(e.message_dict.keys())
                 else:
                     instance.save()
